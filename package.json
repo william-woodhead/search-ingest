@@ -1,0 +1,19 @@
+{
+  "name": "dojo-search-ingest",
+  "version": "1.0.0",
+  "description": "The ingestion engine for content search",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeamDojo/DojoSearchIngest.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TeamDojo/DojoSearchIngest/issues"
+  },
+  "homepage": "https://github.com/TeamDojo/DojoSearchIngest#readme"
+}
