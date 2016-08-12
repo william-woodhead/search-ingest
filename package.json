@@ -37,11 +37,14 @@
     "run-sequence": "^1.2.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.5.0",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "elasticsearch": "^11.0.1",
     "express": "^4.14.0",
     "http-aws-es": "^1.1.3",
+    "lodash": "^4.15.0",
+    "superagent": "^2.1.0",
     "winston": "^2.2.0"
   },
   "jest": {

@@ -6,8 +6,10 @@ import { indices } from './routes/indices';
 import { ingestion } from './routes/ingestion';
 import { CONFIG } from './config';
 import { Elasticsearch } from './core/elasticsearch';
-new Elasticsearch();
+import { S3 } from './core/s3';
 
+new Elasticsearch();
+new S3();
 const app = express();
 
 app.set('port', CONFIG.port);
