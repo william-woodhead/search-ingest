@@ -2,7 +2,8 @@ import express from 'express';
 import winston from 'winston';
 import bodyParser from 'body-parser';
 import compress from 'compression';
-import router from './routes';
+import { indices } from './indices';
+import { ingestion } from './ingestion';
 import { CONFIG } from './config';
 
 const app = express();
@@ -13,7 +14,8 @@ app.use(compress());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(router);
+app.use('/indices', indices);
+app.use('/ingestion', ingestion);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500);

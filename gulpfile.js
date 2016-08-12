@@ -4,13 +4,13 @@ var runSequence = require('run-sequence');
 var del = require('del');
 
 gulp.task('build', function () {
-  return gulp.src(['./src/*.js'])
+  return gulp.src(['./src/*.js', './src/**/*.js'])
     .pipe(babel())
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', function() {
-  gulp.watch(['src/*.js'], ['build']);
+  gulp.watch(['src/*.js', './src/**/*.js'], ['build']);
 });
 
 gulp.task('clean', function() {
