@@ -5,7 +5,8 @@ import compress from 'compression';
 import { indices } from './routes/indices';
 import { ingestion } from './routes/ingestion';
 import { CONFIG } from './config';
-import './core/elasticsearch';
+import { Elasticsearch } from './core/elasticsearch';
+new Elasticsearch();
 
 const app = express();
 

@@ -1,17 +1,13 @@
 import { Elasticsearch } from '../../../core/elasticsearch';
-import { mappings } from './mapping';
 
-export function createIndex({name}) {
+export function deleteIndex({name}) {
   return new Promise((resolve, reject) => {
     const elasticsearch = new Elasticsearch();
     const client = elasticsearch.getClient();
 
-    client.indices.create({
+    client.indices.delete({
       requestTimeout: 30000,
-      index: name,
-      body: {
-        mappings,
-      }
+      index: name
     }).then((response) => {
       resolve(response);
     }).catch((err) => {

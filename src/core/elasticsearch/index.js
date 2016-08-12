@@ -1,4 +1,4 @@
-import Elasticsearch from 'elasticsearch';
+import ElasticSearch from 'elasticsearch';
 
 const config = {
   hosts: 'https://search-content-dev-dmvcnergxcmxccwxecwwvczbwq.eu-west-1.es.amazonaws.com',
@@ -11,4 +11,24 @@ const config = {
   }
 }
 
-export const elasticsearch = Elasticsearch.Client(config);
+let singleton;
+
+export class Elasticsearch {
+  constructor() {
+    if (singleton) {
+      return singleton;
+    }
+
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+      throw new Error('No access credentials');
+      return;
+    }
+
+    this.elasticsearch = ElasticSearch.Client(config);
+    singleton = this;
+  }
+
+  getClient() {
+    return this.elasticsearch;
+  }
+}
