@@ -34,8 +34,9 @@ export class SQS {
   }
 
   addListener(listener) {
-    this.consumer.removeListener('message_processed', listener);
-    this.consumer.on('message_processed', listener);
+    this.consumer
+    .removeListener('message_processed', listener)
+    .on('message_processed', listener);
   }
 
   start() {

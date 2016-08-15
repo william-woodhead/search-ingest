@@ -1,14 +1,19 @@
 import { Elasticsearch } from '../../core/elasticsearch';
 
-export function postToIndex(listing) {
+export function postToIndex(listing, id) {
   return new Promise((resolve, reject) => {
     const elasticsearch = new Elasticsearch();
     const client = elasticsearch.getClient();
-    client.index({
+
+    const config = {
       index: 'london',
       type: 'listingContexts',
       body: listing
-    }).then((result) => {
+    };
+
+    if (id) config.id = id;
+
+    client.index(config).then((result) => {
       resolve(result);
     }).catch((err) => {
       reject(err);

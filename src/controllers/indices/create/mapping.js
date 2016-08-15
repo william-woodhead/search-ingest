@@ -1,6 +1,10 @@
 export const mappings = {
   listingContexts: {
     properties: {
+      slug: {
+        type: 'string',
+        index : 'not_analyzed'
+      },
       medias: {
         properties: {
           aspect_ratio: {
