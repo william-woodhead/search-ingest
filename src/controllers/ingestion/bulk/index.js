@@ -1,51 +1,11 @@
 import winston from 'winston';
-import { Elasticsearch } from '../../../core/elasticsearch';
-import superagent from 'superagent';
 import forEach from 'lodash/forEach';
-import { S3 } from '../../../core/s3';
+import { requestListingContext } from '../../../services/listing-contexts';
+import { getSlugs } from '../../../services/s3';
+import { postToIndex } from '../../../services/elasticsearch';
 
-function getSlugs() {
-  const s3 = new S3();
-  const client = s3.getClient();
-  return new Promise((resolve, reject) => {
-    client.getObject({Bucket: 'dojo-search-ingest', Key: 'slugs_12082016.txt'}, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(data.Body.toString().split('\n').slice(5000, 5200));
-    });
-  });
-}
-
-function requestListingContext(slug = '') {
-  return new Promise((resolve, reject) => {
-    if (!slug) {
-      return reject(new Error('No slug string'));
-    }
-    superagent.get('http://dojo-master-api-development.eu-west-1.elasticbeanstalk.com/web/v1-0/LON/listings/' + slug).end((err, res) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(res.body.listing);
-    });
-  });
-}
-
-function postToIndex(listing) {
-  return new Promise((resolve, reject) => {
-    const elasticsearch = new Elasticsearch();
-    const client = elasticsearch.getClient();
-    client.index({
-      index: 'london',
-      type: 'listingContexts',
-      body: listing
-    }).then((result) => {
-      resolve(result);
-    }).catch((err) => {
-      reject(err);
-    });
-  });
-}
+const BATCH_SIZE = 100;
+const BATCH_TIMEOUT = 10 * 1000;
 
 function processBatch(batch) {
   forEach(batch, (slug, index, array) => {
@@ -61,29 +21,41 @@ function processBatch(batch) {
   });
 }
 
-function stageJob(result, start, end, batchCount) {
-  if (start >= result.length - 1) {
+function stageJob({slugs, startIndex, endIndex, batchCount, zeroedSize}) {
+  if (startIndex >= zeroedSize) {
     winston.log('info', 'End of batches');
     return;
   }
   winston.log('info', `Batch count: ${batchCount}`);
-  processBatch(result.slice(start, end));
+  processBatch(slugs.slice(startIndex, endIndex));
 
-  const newStart = end;
-  const newEnd = end + 100 > result.length - 1 ? result.length - 1 : end + 100;
+  const newStart = endIndex;
+  const newEnd = endIndex + BATCH_SIZE > zeroedSize ? zeroedSize : endIndex + BATCH_SIZE;
   const newBatchCount = batchCount + 1;
 
   setTimeout(() => {
-    stageJob(result, newStart, newEnd, newBatchCount);
-  }, 5000);
+    stageJob({
+      slugs,
+      startIndex: newStart,
+      endIndex: newEnd,
+      batchCount: newBatchCount,
+      zeroedSize
+    });
+  }, BATCH_TIMEOUT);
 }
 
 export function bulkIngest() {
   return new Promise((resolve, reject) => {
     getSlugs().then((result) => {
-      const length = result.length;
-      const firstEnd = length - 1 > 100 ? 100 : length - 1;
-      stageJob(result, 0, firstEnd, 1);
+      const NO_OF_SLUGS_ZEROED = result.length - 1;
+      const firstEnd = NO_OF_SLUGS_ZEROED > BATCH_SIZE ? BATCH_SIZE : NO_OF_SLUGS_ZEROED;
+      stageJob({
+        slugs: result,
+        startIndex: 0,
+        endIndex: firstEnd,
+        batchCount: 1,
+        zeroedSize: NO_OF_SLUGS_ZEROED
+      });
     });
   });
 }
