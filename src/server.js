@@ -5,14 +5,12 @@ import compress from 'compression';
 import { indices } from './routes/indices';
 import { ingestion } from './routes/ingestion';
 import { CONFIG } from './config';
-import { Elasticsearch } from './core/elasticsearch';
-import { S3 } from './core/s3';
-import { SQS } from './core/sqs';
-import { Emitter } from './core/events';
+import { Elasticsearch } from './clients/elasticsearch';
+import { S3 } from './clients/s3';
+import { SQS } from './clients/sqs';
 new Elasticsearch();
 new S3();
 new SQS();
-new Emitter();
 
 const app = express();
 

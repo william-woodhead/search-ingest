@@ -1,4 +1,4 @@
-import { Elasticsearch } from '../../../core/elasticsearch';
+import { Elasticsearch } from '../../../clients/elasticsearch';
 import { mappings } from './mapping';
 
 export function createIndex({name}) {

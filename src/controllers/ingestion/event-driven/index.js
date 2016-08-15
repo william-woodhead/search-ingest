@@ -1,13 +1,11 @@
-import { SQS } from '../../../core/sqs';
-import { getListingContexts } from '../../../core/elasticsearch/getListingContexts';
-import { requestListingContext } from '../../../services/listing-contexts';
-import { postToIndex } from '../../../services/elasticsearch';
-import reduce from 'lodash/reduce';
+import { SQS } from '../../../clients/sqs';
+import { requestListingContext } from '../../../services/content-db';
+import { postToIndex, getListingContexts } from '../../../services/elasticsearch';
+import { sqsMessageToObj } from '../../../utils';
 import size from 'lodash/size';
 import forEach from 'lodash/forEach';
 
 function successHandler(method, slug, result) {
-  const { hits } = result.hits;
   const id = result && result.hits && result.hits.hits && result.hits.hits[0] && result.hits.hits[0]._id ? result.hits.hits[0]._id : undefined;
 
   if (!id && method === 'UPDATE') {
@@ -39,23 +37,20 @@ function deleteHandler() {
   // cannot delete yet
 }
 
-function listener(message) {
-  const attrs = reduce(message.MessageAttributes, (result, attr, key) => {
-    result[key] = attr.StringValue;
-    if (key === 'slugs') {
-      result[key] = attr.StringValue.split(',');
-    }
-    return result;
-  }, {});
+function updateHandler(attrs) {
+  getListingContexts(attrs, successHandler, failureHandler);
+}
 
+function listener(message) {
+  const attrs = sqsMessageToObj(message);
   switch(attrs.method) {
     case 'CREATE':
       return createHandler(attrs);
     case 'DELETE':
-      return deleteHandler(attrs, successHandler, failureHandler);
+      return deleteHandler(attrs);
     case 'UPDATE':
     default:
-      return getListingContexts(attrs, successHandler, failureHandler);
+      return updateHandler(attrs);
   }
 }
 

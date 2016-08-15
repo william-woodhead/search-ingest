@@ -1,4 +1,4 @@
-import { S3 } from '../../core/s3';
+import { S3 } from '../../clients/s3';
 
 export function getSlugs() {
   const s3 = new S3();

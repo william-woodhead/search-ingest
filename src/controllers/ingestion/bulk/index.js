@@ -1,6 +1,6 @@
 import winston from 'winston';
 import forEach from 'lodash/forEach';
-import { requestListingContext } from '../../../services/listing-contexts';
+import { requestListingContext } from '../../../services/content-db';
 import { getSlugs } from '../../../services/s3';
 import { postToIndex } from '../../../services/elasticsearch';
 

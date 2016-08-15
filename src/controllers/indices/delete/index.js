@@ -1,4 +1,4 @@
-import { Elasticsearch } from '../../../core/elasticsearch';
+import { Elasticsearch } from '../../../clients/elasticsearch';
 
 export function deleteIndex({name}) {
   return new Promise((resolve, reject) => {
