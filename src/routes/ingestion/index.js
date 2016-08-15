@@ -1,6 +1,7 @@
 import express from 'express';
 import AWS from 'aws-sdk';
 import { bulkIngest } from '../../controllers/ingestion/bulk';
+import { start, stop } from '../../controllers/ingestion/event-driven';
 export const ingestion = express.Router();
 
 ingestion.get('/bulk', (req, res, next) => {
@@ -12,9 +13,17 @@ ingestion.get('/bulk', (req, res, next) => {
 });
 
 ingestion.get('/events/_start', (req, res, next) => {
-  res.send('start');
+  start().then((result) => {
+    res.send(result);
+  }).catch((err) => {
+    next(err);
+  });
 });
 
 ingestion.get('/events/_stop', (req, res, next) => {
-  res.send('stop');
+  stop().then((result) => {
+    res.send(result);
+  }).catch((err) => {
+    next(err);
+  });
 });

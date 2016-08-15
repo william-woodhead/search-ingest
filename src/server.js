@@ -7,8 +7,10 @@ import { ingestion } from './routes/ingestion';
 import { CONFIG } from './config';
 import { Elasticsearch } from './core/elasticsearch';
 import { S3 } from './core/s3';
+import { SQS } from './core/sqs';
 new Elasticsearch();
 new S3();
+new SQS();
 
 const app = express();
 
