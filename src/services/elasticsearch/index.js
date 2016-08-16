@@ -3,17 +3,12 @@ import { Elasticsearch } from '../../clients/elasticsearch';
 const index = 'london';
 const type = 'listingContexts';
 
-export function postToIndex(listing, id) {
+export function postToIndex(body, id) {
   return new Promise((resolve, reject) => {
     const elasticsearch = new Elasticsearch();
     const client = elasticsearch.getClient();
 
-    const config = {
-      index,
-      type,
-      body: listing
-    };
-
+    const config = { index, type, body };
     if (id) config.id = id;
 
     client.index(config).then((result) => {
