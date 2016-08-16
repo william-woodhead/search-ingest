@@ -4,8 +4,9 @@ import { requestListingContext } from '../../../services/content-db';
 import { getSlugs } from '../../../services/s3';
 import { postToIndex } from '../../../services/elasticsearch';
 
-const BATCH_SIZE = 100;
-const BATCH_TIMEOUT = 10 * 1000;
+const BATCH_SIZE = 1;
+const BATCH_TIMEOUT = 200;
+let ingesting = false;
 
 function processBatch(batch) {
   forEach(batch, (slug, index, array) => {
@@ -24,8 +25,15 @@ function processBatch(batch) {
 function stageJob({slugs, startIndex, endIndex, batchCount, zeroedSize}) {
   if (startIndex >= zeroedSize) {
     winston.log('info', 'End of batches');
+    ingesting = false;
     return;
   }
+
+  if (!ingesting) {
+    winston.log('info', 'Ingestion stopped');
+    return;
+  }
+
   winston.log('info', `Batch count: ${batchCount}`);
   processBatch(slugs.slice(startIndex, endIndex));
 
@@ -44,11 +52,30 @@ function stageJob({slugs, startIndex, endIndex, batchCount, zeroedSize}) {
   }, BATCH_TIMEOUT);
 }
 
-export function bulkIngest() {
+export function stop() {
+  return new Promise((resolve, reject) => {
+    if (!ingesting) {
+      return resolve({
+        message: 'bulk ingest is not running'
+      });
+    }
+
+    ingesting = false;
+    resolve({
+      message: 'bulk ingest has stopped'
+    });
+  });
+}
+
+export function start() {
+  ingesting = true;
   return new Promise((resolve, reject) => {
     getSlugs().then((result) => {
       const NO_OF_SLUGS_ZEROED = result.length - 1;
       const firstEnd = NO_OF_SLUGS_ZEROED > BATCH_SIZE ? BATCH_SIZE : NO_OF_SLUGS_ZEROED;
+      resolve({
+        message: 'bulk ingest has begun...'
+      });
       stageJob({
         slugs: result,
         startIndex: 0,

@@ -2,6 +2,8 @@ import Consumer from 'sqs-consumer';
 import winston from 'winston';
 import AWS from 'aws-sdk';
 
+const queueUrl = 'https://sqs.eu-west-1.amazonaws.com/574347931884/listing-trigger-dev';
+
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -17,12 +19,12 @@ export class SQS {
     }
 
     if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-      throw new Error('No access credentials');
+      throw new Error('No access credentials for SQS');
       return;
     }
 
     this.consumer = Consumer.create({
-      queueUrl: 'https://sqs.eu-west-1.amazonaws.com/574347931884/listing-trigger-dev',
+      queueUrl,
       attributeNames: ['All'],
       messageAttributeNames: ['All'],
       handleMessage: (message, done) => done()

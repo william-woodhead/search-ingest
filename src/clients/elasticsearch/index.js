@@ -21,7 +21,7 @@ export class Elasticsearch {
     }
 
     if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-      throw new Error('No access credentials');
+      throw new Error('No access credentials for elasticsearch');
       return;
     }
 

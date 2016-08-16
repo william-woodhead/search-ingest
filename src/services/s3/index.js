@@ -8,7 +8,7 @@ export function getSlugs() {
       if (err) {
         return reject(err);
       }
-      resolve(data.Body.toString().split('\n').slice(0, 500));
+      resolve(data.Body.toString().split('\n').slice(1000, 4000));
     });
   });
 }
