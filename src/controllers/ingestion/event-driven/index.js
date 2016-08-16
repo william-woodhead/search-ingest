@@ -1,71 +1,20 @@
-import winston from 'winston';
-import { SQS } from '../../../clients/sqs';
-import { requestListingContext } from '../../../services/content-db';
-import { postToIndex, getListingContexts } from '../../../services/elasticsearch';
-import { sqsMessageToObj } from '../../../utils';
-import size from 'lodash/size';
-import forEach from 'lodash/forEach';
+import { listener } from '../../../pipes/ingestion/event-driven';
+import { start as startSQS, stop as stopSQS } from '../../../services/sqs';
 
 export function start() {
   return new Promise((resolve, reject) => {
-    const sqs = new SQS();
-    sqs.start();
-    resolve();
-    sqs.addListener(listener);
+    resolve({
+      message: 'event listener started'
+    });
+    startSQS(listener); // add listener
   });
 }
 
 export function stop() {
   return new Promise((resolve, reject) => {
-    const sqs = new SQS();
-    sqs.stop();
-    resolve();
-  });
-}
-
-function listener(message) {
-  const attrs = sqsMessageToObj(message);
-  switch(attrs.method) {
-    case 'CREATE':
-      return createHandler(attrs);
-    case 'DELETE':
-      return deleteHandler(attrs);
-    case 'UPDATE':
-    default:
-      return updateHandler(attrs);
-  }
-}
-
-function createHandler(attrs) {
-  forEach(attrs.slugs, (slug) => {
-    requestAndIndex(slug);
-  });
-}
-
-function deleteHandler() {
-  // cannot delete yet
-}
-
-function updateHandler(attrs) {
-  forEach(attrs.slugs, (slug) => {
-    getListingContexts(slug).then((result) => {
-      const id = result && result.hits && result.hits.hits && result.hits.hits[0] && result.hits.hits[0]._id ? result.hits.hits[0]._id : undefined;
-      if (!id) winston.log('error', `cant find document to update for slug: ${slug} - This action might be creating a duplicate listingContext`);
-      requestAndIndex(slug, id);
-    }).catch((err) => {
-      winston.log('error', err);
+    resolve({
+      message: 'event listener stopped'
     });
-  });
-}
-
-function requestAndIndex(slug, id) {
-  requestListingContext(slug).then((result) => {
-    postToIndex(result, id).then((result) => {
-      winston.log('info', `listing context ${slug} indexed`);
-    }).catch((err) => {
-      winston.log('error', err.stack, { slug });
-    });
-  }).catch((err) => {
-    winston.log('error', err.stack, { slug });
+    stopSQS();
   });
 }

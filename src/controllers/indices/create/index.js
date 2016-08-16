@@ -1,19 +1,9 @@
-import { Elasticsearch } from '../../../clients/elasticsearch';
-import { mappings } from './mapping';
+import { createIndex as createESIndex } from '../../../services/elasticsearch';
 
-export function createIndex({name}) {
+export function createIndex(config = {}) {
   return new Promise((resolve, reject) => {
-    const elasticsearch = new Elasticsearch();
-    const client = elasticsearch.getClient();
-
-    client.indices.create({
-      requestTimeout: 30000,
-      index: name,
-      body: {
-        mappings,
-      }
-    }).then((response) => {
-      resolve(response);
+    createESIndex(config).then((result) => {
+      resolve(result)
     }).catch((err) => {
       reject(err);
     });

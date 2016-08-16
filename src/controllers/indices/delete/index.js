@@ -1,15 +1,9 @@
-import { Elasticsearch } from '../../../clients/elasticsearch';
+import { deleteIndex as deleteESIndex } from '../../../services/elasticsearch';
 
-export function deleteIndex({name}) {
+export function deleteIndex(config = {}) {
   return new Promise((resolve, reject) => {
-    const elasticsearch = new Elasticsearch();
-    const client = elasticsearch.getClient();
-
-    client.indices.delete({
-      requestTimeout: 30000,
-      index: name
-    }).then((response) => {
-      resolve(response);
+    deleteESIndex(config).then((result) => {
+      resolve(result)
     }).catch((err) => {
       reject(err);
     });
