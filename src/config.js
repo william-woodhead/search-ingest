@@ -11,6 +11,5 @@ export const CONFIG = {
   DB_LISTING_URL: 'http://dojo-master-api-development.eu-west-1.elasticbeanstalk.com/web/v1-0/LON/listings/',
   ES_URL: 'https://search-content-dev-dmvcnergxcmxccwxecwwvczbwq.eu-west-1.es.amazonaws.com',
   SQS_URL: 'https://sqs.eu-west-1.amazonaws.com/574347931884/listing-trigger-dev',
-  S3_BUCKET: 'dojo-search-ingest',
-  S3_KEY: 'slugs_12082016.txt'
+  S3_BUCKET: 'dojo-search-ingest'
 };

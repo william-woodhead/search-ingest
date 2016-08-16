@@ -14,9 +14,11 @@ function processBatch(batch) {
       postToIndex(result).then((result) => {
         winston.log('info', `listing context ${index + 1} of ${array.length}`);
       }).catch((err) => {
+        ingesting = false;
         winston.log('error', err, { slug });
       });
     }).catch((err) => {
+      ingesting = false;
       winston.log('error', err, { slug });
     });
   });
@@ -67,10 +69,10 @@ export function stop() {
   });
 }
 
-export function start() {
+export function start(config = {}) {
   ingesting = true;
   return new Promise((resolve, reject) => {
-    getSlugs().then((result) => {
+    getSlugs(config).then((result) => {
       const NO_OF_SLUGS_ZEROED = result.length - 1;
       const firstEnd = NO_OF_SLUGS_ZEROED > BATCH_SIZE ? BATCH_SIZE : NO_OF_SLUGS_ZEROED;
       resolve({
@@ -83,6 +85,8 @@ export function start() {
         batchCount: 1,
         zeroedSize: NO_OF_SLUGS_ZEROED
       });
+    }).catch((err) => {
+      reject(err);
     });
   });
 }

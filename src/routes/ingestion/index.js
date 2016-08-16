@@ -5,7 +5,11 @@ import { start, stop } from '../../controllers/ingestion/event-driven';
 export const ingestion = express.Router();
 
 ingestion.get('/bulk/_start', (req, res, next) => {
-  bulkStart().then((result) => {
+  if (!req.query.key) {
+    return next(new Error('This request needs a bucket key in the query string'));
+  }
+  const { key } = req.query;
+  bulkStart({ key }).then((result) => {
     res.send(result);
   }).catch((err) => {
     next(err);
