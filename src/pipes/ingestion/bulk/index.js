@@ -18,53 +18,27 @@ export function stopPipe() {
 export function startPipe(config) {
   ingesting = true;
   getSlugs(config).then((slugs) => {
-    const NO_OF_SLUGS_ZEROED = slugs.length - 1;
-    const firstEnd = NO_OF_SLUGS_ZEROED > BATCH_SIZE ? BATCH_SIZE : NO_OF_SLUGS_ZEROED;
-    stageJob({
-      slugs,
-      startIndex: 0,
-      endIndex: firstEnd,
-      batchCount: 1,
-      zeroedSize: NO_OF_SLUGS_ZEROED
-    });
+    stagedIteration({ slugs, index: 0, zeroedSize: slugs.length - 1 });
   }).catch((err) => {
     reject(err);
   });
 }
 
-function processBatch(batch) {
-  forEach(batch, (slug, index, array) => {
-    requestAndIndex(slug).catch((err) => {
-      ingesting = false;
-    });
-  });
-}
-
-function stageJob({slugs, startIndex, endIndex, batchCount, zeroedSize}) {
-  if (startIndex >= zeroedSize) {
+function stagedIteration({slugs, index, zeroedSize}) {
+  if (index > zeroedSize) {
     ingesting = false;
-    return winston.log('info', 'End of batches');
-
+    return winston.log('info', 'End of ingestion');
   }
 
-  if (!ingesting) {
-    return winston.log('info', 'Ingestion stopped');
-  }
+  if (!ingesting) return winston.log('info', 'Ingestion stopped');
 
-  winston.log('info', `Batch count: ${batchCount}`);
-  processBatch(slugs.slice(startIndex, endIndex));
-
-  const newStart = endIndex;
-  const newEnd = endIndex + BATCH_SIZE > zeroedSize ? zeroedSize : endIndex + BATCH_SIZE;
-  const newBatchCount = batchCount + 1;
+  requestAndIndex(slugs[index]).then(() => {
+    winston.log('info', `index: ${index}`);
+  }).catch((err) => {
+    ingesting = false;
+  });
 
   setTimeout(() => {
-    stageJob({
-      slugs,
-      startIndex: newStart,
-      endIndex: newEnd,
-      batchCount: newBatchCount,
-      zeroedSize
-    });
+    stagedIteration({ slugs, index: index + 1, zeroedSize });
   }, BATCH_TIMEOUT);
 }
