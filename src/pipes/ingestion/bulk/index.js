@@ -1,18 +1,16 @@
 import winston from 'winston';
-import forEach from 'lodash/forEach';
 import { requestListingContext } from '../../../services/content-db';
+import { requestAndIndex } from '../shared';
 import { getSlugs } from '../../../services/s3';
 import { postToIndex } from '../../../services/elasticsearch';
+import forEach from 'lodash/forEach';
 
 const BATCH_SIZE = 1;
 const BATCH_TIMEOUT = 200;
 let ingesting = false;
 
 export function stopPipe() {
-  if (!ingesting) {
-    winston.log('error', 'bulk ingest is not running');
-  }
-
+  if (!ingesting) return winston.log('error', 'bulk ingest is not running');
   ingesting = false;
   winston.log('info', 'bulk ingest has stopped');
 }
@@ -36,30 +34,21 @@ export function startPipe(config) {
 
 function processBatch(batch) {
   forEach(batch, (slug, index, array) => {
-    requestListingContext(slug).then((result) => {
-      postToIndex(result).then((result) => {
-        winston.log('info', `listing context ${index + 1} of ${array.length}`);
-      }).catch((err) => {
-        ingesting = false;
-        winston.log('error', err, { slug });
-      });
-    }).catch((err) => {
+    requestAndIndex(slug).catch((err) => {
       ingesting = false;
-      winston.log('error', err, { slug });
     });
   });
 }
 
 function stageJob({slugs, startIndex, endIndex, batchCount, zeroedSize}) {
   if (startIndex >= zeroedSize) {
-    winston.log('info', 'End of batches');
     ingesting = false;
-    return;
+    return winston.log('info', 'End of batches');
+
   }
 
   if (!ingesting) {
-    winston.log('info', 'Ingestion stopped');
-    return;
+    return winston.log('info', 'Ingestion stopped');
   }
 
   winston.log('info', `Batch count: ${batchCount}`);
