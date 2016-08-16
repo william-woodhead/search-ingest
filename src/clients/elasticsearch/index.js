@@ -2,7 +2,7 @@ import ElasticSearch from 'elasticsearch';
 import { CONFIG } from '../../config';
 
 const config = {
-  hosts: 'https://search-content-dev-dmvcnergxcmxccwxecwwvczbwq.eu-west-1.es.amazonaws.com',
+  hosts: CONFIG.ES_URL,
   log: !CONFIG.IS_PROD ? 'error': 'trace',
   connectionClass: require('http-aws-es'),
   amazonES: {

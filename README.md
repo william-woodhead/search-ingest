@@ -8,3 +8,8 @@ It has 4 main jobs.
 1. Mass migration of data into an index.
 1. Incremental updates of documents in the index.
 1. Reindexing the elastic search index with zero downtime.
+
+There are a number of interlinked service.
+
+1. To ingest data, slugs needs to be read from an S3 bucket. However, these slugs are incredibly secret, so they should not be publically accessible.
+1. Incremental ingestion is read from an SQS message queue. This needs to be up and running for incremental updates to work.

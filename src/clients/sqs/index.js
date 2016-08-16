@@ -1,8 +1,7 @@
 import Consumer from 'sqs-consumer';
 import winston from 'winston';
 import AWS from 'aws-sdk';
-
-const queueUrl = 'https://sqs.eu-west-1.amazonaws.com/574347931884/listing-trigger-dev';
+import { CONFIG } from '../../config';
 
 AWS.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -24,7 +23,7 @@ export class SQS {
     }
 
     this.consumer = Consumer.create({
-      queueUrl,
+      queueUrl: CONFIG.SQS_URL,
       attributeNames: ['All'],
       messageAttributeNames: ['All'],
       handleMessage: (message, done) => done()
