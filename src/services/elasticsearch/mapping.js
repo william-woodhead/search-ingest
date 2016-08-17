@@ -1,5 +1,5 @@
 export const mappings = {
-  listingContexts: {
+  listingContext: {
     properties: {
       slug: {
         type: 'string',

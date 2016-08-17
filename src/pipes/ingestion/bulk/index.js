@@ -2,7 +2,6 @@ import winston from 'winston';
 import { requestListingContext } from '../../../services/content-db';
 import { requestAndIndex } from '../shared';
 import { getSlugs } from '../../../services/s3';
-import { postToIndex } from '../../../services/elasticsearch';
 import forEach from 'lodash/forEach';
 
 const BATCH_SIZE = 1;
@@ -16,15 +15,18 @@ export function stopPipe() {
 }
 
 export function startPipe(config) {
+  if (ingesting) return winston.log('error', `We are already ingesting a bulk job`);
+
   ingesting = true;
   getSlugs(config).then((slugs) => {
-    stagedIteration({ slugs, index: 0, zeroedSize: slugs.length - 1 });
+    stagedIteration({ slugs, config, index: 0, zeroedSize: slugs.length - 1 });
   }).catch((err) => {
-    reject(err);
+    winston.log('error', err);
+    ingesting = false;
   });
 }
 
-function stagedIteration({slugs, index, zeroedSize}) {
+function stagedIteration({ slugs, config, index, zeroedSize }) {
   if (index > zeroedSize) {
     ingesting = false;
     return winston.log('info', 'End of ingestion');
@@ -32,13 +34,14 @@ function stagedIteration({slugs, index, zeroedSize}) {
 
   if (!ingesting) return winston.log('info', 'Ingestion stopped');
 
-  requestAndIndex(slugs[index]).then(() => {
+  requestAndIndex({ config, slug: slugs[index] }).then(() => {
     winston.log('info', `index: ${index}`);
   }).catch((err) => {
+    winston.log('error', err);
     ingesting = false;
   });
 
   setTimeout(() => {
-    stagedIteration({ slugs, index: index + 1, zeroedSize });
+    stagedIteration({ slugs, config, index: index + 1, zeroedSize });
   }, BATCH_TIMEOUT);
 }

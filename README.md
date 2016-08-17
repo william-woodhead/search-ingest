@@ -13,3 +13,5 @@ There are a number of interlinked service.
 
 1. To ingest data, slugs needs to be read from an S3 bucket. However, these slugs are incredibly secret, so they should not be publically accessible.
 1. Incremental ingestion is read from an SQS message queue. This needs to be up and running for incremental updates to work.
+
+/ingestion/bulk/_start?index=<index name>&bucketkey=<name of the line separated file of slugs in s3>&type=<type on the index>

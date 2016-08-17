@@ -2,8 +2,6 @@ import { Elasticsearch } from '../../clients/elasticsearch';
 import { mappings } from './mapping';
 const elasticsearch = new Elasticsearch();
 const client = elasticsearch.getClient();
-const index = 'london';
-const type = 'listingContexts';
 
 export function createIndex({ name }) {
   return new Promise((resolve, reject) => {
@@ -32,12 +30,12 @@ export function deleteIndex({ name }) {
   });
 }
 
-export function postToIndex(body, id) {
+export function postToIndex({ index, type }, body, id) {
   return new Promise((resolve, reject) => {
-    const config = { index, type, body };
-    if (id) config.id = id;
+    const params = { index, type, body };
+    if (id) params.id = id;
 
-    client.index(config).then((result) => {
+    client.index(params).then((result) => {
       resolve(result);
     }).catch((err) => {
       reject(err);
@@ -45,12 +43,12 @@ export function postToIndex(body, id) {
   });
 }
 
-export function getListingContexts(slug) {
+export function getListingContexts(config = {}, slug) {
   return new Promise((resolve, reject) => {
     const query = { constant_score: { filter: { term: { slug } } } };
     client.search({
-      index,
-      type,
+      index: config.index,
+      type: config.type,
       body: { query }
     }).then((result) => {
       resolve(result);

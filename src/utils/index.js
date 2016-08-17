@@ -9,3 +9,11 @@ export function sqsMessageToObj(message = {}) {
     return result;
   }, {});
 }
+
+export function mapCityIdToIndexName(cityId) {
+  switch (cityId) {
+    case 'LON': return 'london';
+    case 'PAR': return 'paris';
+    default: return 'london';
+  }
+}
