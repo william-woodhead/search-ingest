@@ -1,17 +1,31 @@
 # Dojo Search Ingest
 
-This micro-service is designed to ingest data from the content database and put it into Elasticsearch.
+This micro-service is designed to manage the ingestion of data from the content database into Elasticsearch. It has some main responsibilities:
 
-It has 4 main jobs.
+1. Setup of an Elasticsearch index including mapping. (the mappings are built into this microservice)
+1. Mass migration of data from the db into an index.
+1. Incremental updates of documents in the index when the db is updated.
+1. Switching migration/updates off and on.
 
-1. Setup of an Elasticsearch index including mapping.
-1. Mass migration of data into an index.
-1. Incremental updates of documents in the index.
-1. Reindexing the elastic search index with zero downtime.
+###  Setup of an Elasticsearch index including mapping
+``/indices/london/_create`` will create an index called london.
 
-There are a number of interlinked service.
+``/indices/paris/_delete`` will delete an index called paris.
 
-1. To ingest data, slugs needs to be read from an S3 bucket. However, these slugs are incredibly secret, so they should not be publically accessible.
-1. Incremental ingestion is read from an SQS message queue. This needs to be up and running for incremental updates to work.
+Currently, only paris and london are valid index names.
 
-/ingestion/bulk/_start?index=<index name>&bucketkey=<name of the line separated file of slugs in s3>&type=<type on the index>
+###  Bulk ingestion to initialise the Elasticsearch cluster
+``/ingestion/bulk/_start?index=<name>&bucketkey=<name of file in s3>&type=<index type>`` will ingest from the content db using slugs from S3 in a file named <bucketkey> into index <index> with type <type>. However, these slugs are incredibly secret, so they should not be publicly accessible.
+
+possible values for index are 'london' | 'paris'. defaults to 'london'.
+possible values for bucketkey are whatever the file is named in s3. defaults to slugs.txt. This file much be a new-line separated file of valid slugs.
+possible values of type are 'listingContext'. defaults to 'listingContext'.
+
+``/ingestion/bulk/_stop`` will stop any ingestion that is occurring.
+
+Currently only one ingestion can be in process at any time.
+
+###  Event-driven, incremental ingestion to update the Elasticsearch cluster
+``/ingestion/events/_start`` will start the event listener. The listener will be listening to event coming off an SQS queue. This needs to be up and running.
+
+``/ingestion/events/_stop`` will pause the incremental ingestion.
