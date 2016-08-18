@@ -30,9 +30,9 @@ export function deleteIndex({ name }) {
   });
 }
 
-export function postToIndex({ index, type }, body, id) {
+export function postToIndex({ index, type, result, id }) {
   return new Promise((resolve, reject) => {
-    const params = { index, type, body };
+    const params = { index, type, body: result };
     if (id) params.id = id;
 
     client.index(params).then((result) => {
@@ -43,12 +43,13 @@ export function postToIndex({ index, type }, body, id) {
   });
 }
 
-export function getListingContexts(config = {}, slug) {
+export function getListingContexts(config = {}) {
+  const { slug, index, type } = config;
   return new Promise((resolve, reject) => {
     const query = { constant_score: { filter: { term: { slug } } } };
     client.search({
-      index: config.index,
-      type: config.type,
+      index,
+      type,
       body: { query }
     }).then((result) => {
       resolve(result);

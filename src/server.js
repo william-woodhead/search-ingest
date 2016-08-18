@@ -8,6 +8,7 @@ import { CONFIG } from './config';
 import { Elasticsearch } from './clients/elasticsearch';
 import { S3 } from './clients/s3';
 import { SQS } from './clients/sqs';
+import './pipes/layers';
 
 // set up singletons
 new Elasticsearch();
