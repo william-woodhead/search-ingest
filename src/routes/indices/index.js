@@ -1,6 +1,5 @@
 import express from 'express';
-import { createIndex } from '../../controllers/indices/create';
-import { deleteIndex } from '../../controllers/indices/delete';
+import { createIndex, deleteIndex } from '../../controllers/indices';
 import winston from 'winston';
 export const indices = express.Router();
 

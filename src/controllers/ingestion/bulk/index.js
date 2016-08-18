@@ -1,8 +1,7 @@
 import { bulkIngestDefaults, EVENTS } from '../../../core/enums';
 import { emit } from '../../../core/event-emitter';
 import { getSlugs } from '../../../services/s3';
-import cloneDeep from 'lodash/cloneDeep';
-import forEach from 'lodash/forEach';
+import reduce from 'lodash/reduce';
 
 export function stop() {
   return new Promise((resolve, reject) => {
@@ -12,19 +11,13 @@ export function stop() {
 }
 
 export function start(config = {}) {
-  const params = cloneDeep(bulkIngestDefaults);
-  forEach(config, (value, key) => {
-    if (value) {
-      params[key] = value;
-    }
-  });
-
-  params.method = 'CREATE';
+  const params = reduce(config, (result, value, key) => {
+    if (value) result[key] = value;
+    return result;
+  }, { ...bulkIngestDefaults, method: 'CREATE' });
 
   return new Promise((resolve, reject) => {
-    resolve({
-      message: 'bulk ingest has begun...'
-    });
+    resolve({ message: 'bulk ingest has begun...' });
 
     getSlugs(params).then((slugs) => {
       emit(EVENTS.BULK_INGEST, { ...params, slugs });

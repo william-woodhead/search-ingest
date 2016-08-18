@@ -3,7 +3,7 @@ import { iterator } from '../../../utils';
 import { emit } from '../../../core/event-emitter';
 import { EVENTS } from '../../../core/enums';
 
-const STAGE_TIMEOUT = 200;
+const STAGE_TIMEOUT = 100;
 let ingesting = false;
 
 export function listener(event, payload) {
