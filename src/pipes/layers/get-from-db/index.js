@@ -13,7 +13,7 @@ export function listener(event, payload) {
 }
 
 function getFromDB(config = {}) {
-  requestListingContext(config).then((result) => {
+  return requestListingContext(config).then((result) => {
     emit(EVENTS.RESPONSE_FROM_DB, { ...config, result });
   }).catch((err) => {
     emit(EVENTS.ERROR, err);

@@ -12,8 +12,8 @@ export function listener(event, payload) {
 }
 
 function index(config = {}) {
-  postToIndex(config).then((result) => {
-    emit(EVENTS.DOCUMENT_INDEXED, config);
+  return postToIndex(config).then((result) => {
+    emit(EVENTS.DOCUMENT_INDEXED, { ...config, result });
   }).catch((err) => {
     emit(EVENTS.ERROR, err);
   });

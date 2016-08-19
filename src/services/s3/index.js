@@ -6,9 +6,7 @@ export function getSlugs(config = {}) {
   const client = s3.getClient();
   return new Promise((resolve, reject) => {
     client.getObject({Bucket: CONFIG.S3_BUCKET, Key: config.bucketkey }, (err, data) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
       resolve(data.Body.toString().split('\n'));
     });
   });
