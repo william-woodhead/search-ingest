@@ -5,27 +5,27 @@ import { EVENTS } from '../../../../core/enums';
 describe('The get from db layer', () => {
 
   let listener;
-  let getListingContexts;
+  let getDocuments;
   let emit;
   beforeEach(() => {
     listener = require('../index').listener;
-    getListingContexts = require('../../../../services/elasticsearch').getListingContexts;
+    getDocuments = require('../../../../services/elasticsearch').getDocuments;
     emit = require('../../../../core/event-emitter').emit;
   });
 
   describe('When an method update event occurs', () => {
-    it('should request listing contexts', () => {
-      getListingContexts.mockImplementation(() => {
+    it('should request content', () => {
+      getDocuments.mockImplementation(() => {
         return Promise.resolve();
       });
       const config =  { this: 'is config' };
       listener({ type: EVENTS.METHOD_UPDATE }, config);
-      expect(getListingContexts).toBeCalledWith(config);
+      expect(getDocuments).toBeCalledWith(config);
     });
 
-    describe('When the listing context request is successful', () => {
+    describe('When the content request is successful', () => {
       it('should emit a response from db event', () => {
-        getListingContexts.mockImplementation(() => {
+        getDocuments.mockImplementation(() => {
           return Promise.resolve({ hits: { hits: [{ _id: '123' }] } });
         });
         const config =  { this: 'is config' };
@@ -37,9 +37,9 @@ describe('The get from db layer', () => {
       });
     });
 
-    describe('When the listing context request fails', () => {
+    describe('When the content request fails', () => {
       it('should emit a response from db event', () => {
-        getListingContexts.mockImplementation(() => {
+        getDocuments.mockImplementation(() => {
           return Promise.reject('not coolio');
         });
         const config =  { this: 'is config' };

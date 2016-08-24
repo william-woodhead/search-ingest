@@ -14,7 +14,7 @@ describe('The index in es layer', () => {
   });
 
   describe('When an method update event occurs', () => {
-    it('should request listing contexts', () => {
+    it('should request content', () => {
       postToIndex.mockImplementation(() => {
         return Promise.resolve();
       });
@@ -23,7 +23,7 @@ describe('The index in es layer', () => {
       expect(postToIndex).toBeCalledWith(config);
     });
 
-    describe('When the listing context request is successful', () => {
+    describe('When the content request is successful', () => {
       it('should emit a response from db event', () => {
         postToIndex.mockImplementation(() => {
           return Promise.resolve('coolio');
@@ -37,7 +37,7 @@ describe('The index in es layer', () => {
       });
     });
 
-    describe('When the listing context request fails', () => {
+    describe('When the content request fails', () => {
       it('should emit a response from db event', () => {
         postToIndex.mockImplementation(() => {
           return Promise.reject('not coolio');

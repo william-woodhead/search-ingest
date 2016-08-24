@@ -19,9 +19,9 @@ export function sqsMessageToObj(message = {}) {
 
 export function mapCityIdToIndexName(cityId) {
   switch (cityId) {
-    case 'LON': return 'london';
-    case 'PAR': return 'paris';
-    default: return 'london';
+    case 'pub': return 'public';
+    case 'priv': return 'private';
+    default: return 'public';
   }
 }
 

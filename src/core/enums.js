@@ -1,10 +1,10 @@
 import mirror from 'key-mirror';
-export const indexes = ['london', 'paris'];
+export const indexes = ['public', 'private'];
 
 export const bulkIngestDefaults = {
   bucketkey: 'slugs.txt',
-  index: 'london',
-  type: 'listingContext'
+  index: 'public',
+  type: 'users'
 };
 
 export const EVENTS = mirror({

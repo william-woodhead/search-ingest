@@ -12,5 +12,5 @@ export function listener(event, payload) {
 }
 
 export function success(config = {}) {
-  winston.log('info', `listing context ${config.slug} indexed`);
+  winston.log('info', `${config.slug} indexed`);
 }

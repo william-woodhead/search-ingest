@@ -1,4 +1,4 @@
-import { requestListingContext } from '../../../services/content-db';
+import { requestContent } from '../../../services/content-db';
 import { EVENTS } from '../../../core/enums';
 import { emit } from '../../../core/event-emitter';
 
@@ -13,7 +13,7 @@ export function listener(event, payload) {
 }
 
 function getFromDB(config = {}) {
-  return requestListingContext(config).then((result) => {
+  return requestContent(config).then((result) => {
     emit(EVENTS.RESPONSE_FROM_DB, { ...config, result });
   }).catch((err) => {
     emit(EVENTS.ERROR, err);

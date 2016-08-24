@@ -5,27 +5,27 @@ import { EVENTS } from '../../../../core/enums';
 describe('The get from db layer', () => {
 
   let listener;
-  let requestListingContext;
+  let requestContent;
   let emit;
   beforeEach(() => {
     listener = require('../index').listener;
-    requestListingContext = require('../../../../services/content-db').requestListingContext;
+    requestContent = require('../../../../services/content-db').requestContent;
     emit = require('../../../../core/event-emitter').emit;
   });
 
   describe('When an method create event occurs', () => {
-    it('should request listing contexts', () => {
-      requestListingContext.mockImplementation(() => {
+    it('should request content', () => {
+      requestContent.mockImplementation(() => {
         return Promise.resolve();
       });
       const config =  { this: 'is config' };
       listener({ type: EVENTS.METHOD_CREATE }, config);
-      expect(requestListingContext).toBeCalledWith(config);
+      expect(requestContent).toBeCalledWith(config);
     });
 
-    describe('When the listing context request is successful', () => {
+    describe('When the content request is successful', () => {
       it('should emit a response from db event', () => {
-        requestListingContext.mockImplementation(() => {
+        requestContent.mockImplementation(() => {
           return Promise.resolve('coolio');
         });
         const config =  { this: 'is config' };
@@ -37,9 +37,9 @@ describe('The get from db layer', () => {
       });
     });
 
-    describe('When the listing context request fails', () => {
+    describe('When the content request fails', () => {
       it('should emit a response from db event', () => {
-        requestListingContext.mockImplementation(() => {
+        requestContent.mockImplementation(() => {
           return Promise.reject('not coolio');
         });
         const config =  { this: 'is config' };
@@ -53,18 +53,18 @@ describe('The get from db layer', () => {
   });
 
   describe('When an response from es event occurs', () => {
-    it('should request listing contexts', () => {
-      requestListingContext.mockImplementation(() => {
+    it('should request content', () => {
+      requestContent.mockImplementation(() => {
         return Promise.resolve();
       });
       const config =  { this: 'is config' };
       listener({ type: EVENTS.RESPONSE_FROM_ES }, config);
-      expect(requestListingContext).toBeCalledWith(config);
+      expect(requestContent).toBeCalledWith(config);
     });
 
-    describe('When the listing context request is successful', () => {
+    describe('When the content request is successful', () => {
       it('should emit a response from db event', () => {
-        requestListingContext.mockImplementation(() => {
+        requestContent.mockImplementation(() => {
           return Promise.resolve('coolio');
         });
         const config =  { this: 'is config' };
@@ -76,9 +76,9 @@ describe('The get from db layer', () => {
       });
     });
 
-    describe('When the listing context request fails', () => {
+    describe('When the content request fails', () => {
       it('should emit a response from db event', () => {
-        requestListingContext.mockImplementation(() => {
+        requestContent.mockImplementation(() => {
           return Promise.reject('not coolio');
         });
         const config =  { this: 'is config' };

@@ -43,7 +43,7 @@ export function postToIndex({ index, type, result, id }) {
   });
 }
 
-export function getListingContexts(config = {}) {
+export function getDocuments(config = {}) {
   const { slug, index, type } = config;
   return new Promise((resolve, reject) => {
     const query = { constant_score: { filter: { term: { slug } } } };

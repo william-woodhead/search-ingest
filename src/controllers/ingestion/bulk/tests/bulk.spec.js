@@ -44,9 +44,9 @@ describe('The bulk controller', () => {
       return start({}).then(() => {
         expect(getSlugs).toBeCalledWith({
           bucketkey: 'slugs.txt',
-          index: 'london',
+          index: 'public',
           method: 'CREATE',
-          type: 'listingContext'
+          type: 'users'
         });
       });
     });
@@ -59,9 +59,9 @@ describe('The bulk controller', () => {
         return start().then(() => {
           expect(emit).toBeCalledWith(EVENTS.BULK_INGEST, {
             bucketkey: 'slugs.txt',
-            index: 'london',
+            index: 'public',
             method: 'CREATE',
-            type: 'listingContext',
+            type: 'users',
             slugs: ['sluginton-mcgee']
           });
         });

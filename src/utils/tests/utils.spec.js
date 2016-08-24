@@ -5,11 +5,11 @@ describe('The utils module', () => {
     it('should return a mapped object', () => {
       const message = {
         MessageAttributes: {
-          city: {
-            StringValue: 'LON'
+          index: {
+            StringValue: 'public'
           },
           type: {
-            StringValue: 'listingContext'
+            StringValue: 'users'
           },
           method: {
             StringValue: 'CREATE'
@@ -22,8 +22,8 @@ describe('The utils module', () => {
       const { sqsMessageToObj } = require('../index');
 
       expect(sqsMessageToObj(message)).toEqual({
-        index: 'london',
-        type: 'listingContext',
+        index: 'public',
+        type: 'users',
         method: 'CREATE',
         slugs: ['123', '124', '125']
       });

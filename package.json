@@ -1,7 +1,7 @@
 {
-  "name": "dojo-search-ingest",
+  "name": "search-ingest",
   "version": "1.0.0",
-  "description": "The ingestion engine for content search",
+  "description": "An ingestion engine for Elasticsearch from a rest API DB",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/jest-cli/bin/jest.js",
@@ -11,16 +11,8 @@
     "dev": "npm run build && npm run start-dev & npm run watch",
     "start": "npm run build && node dist/start.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TeamDojo/DojoSearchIngest.git"
-  },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/TeamDojo/DojoSearchIngest/issues"
-  },
-  "homepage": "https://github.com/TeamDojo/DojoSearchIngest#readme",
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-jest": "^14.1.0",
